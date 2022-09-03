@@ -150,6 +150,8 @@
             <th scope="col">Options 3</th>
             <th scope="col">Options 4</th>
 
+
+
           </tr>
         </thead>
         <tbody id="wrapper">
@@ -182,6 +184,7 @@
     var decisions=document.getElementById('decisionbtn')
     decisions.innerHTML=''
     wrapper.innerHTML=''
+    
     modal.style.display = "block";
     fetch(`http://127.0.0.1:8000/getquestion/${i}`)
 	.then((response) => response.json())
@@ -189,29 +192,86 @@
 		_this.question=result.data
         var list=this.question
 
-
+        
         for(var i in list){
-            var title=`<span class="title">${_this.question[i].question}</span>`
+
+            if(_this.question[i].answer[0].is_correct == true){
+                var title=`<span class="title">${_this.question[i].question}</span>`
+            
+                var item=`
+                <tr>
+                    <th scope="row">${Number(i)+1}</th>
+                    <td class="badge bg-primary">${_this.question[i].question}</td>
+                    <td>${_this.question[i].answer[0].answer}</td>
+                    <td>${_this.question[i].answer[1].answer}</td>
+                    <td>${_this.question[i].answer[2].answer}</td>
+                    <td>${_this.question[i].answer[3].answer}</td>
+                    
+
+                    
+
+                </tr>`
+            
+
+                
+            }
+            else if(_this.question[i].answer[1].is_correct == true){
+                var title=`<span class="title">${_this.question[i].question}</span>`
+            
             var item=`
             <tr>
                 <th scope="row">${Number(i)+1}</th>
                 <td>${_this.question[i].question}</td>
                 <td>${_this.question[i].answer[0].answer}</td>
-                <td>${_this.question[i].answer[1].answer}</td>
-                <td>${_this.question[i].answer[2].answer}</td>
+                <td class="badge bg-primary">${_this.question[i].answer[1].answer}</td>
+                <td >${_this.question[i].answer[2].answer}</td>
                 <td>${_this.question[i].answer[3].answer}</td>
+                
+
+                
 
             </tr>`
+            }
+            else if(_this.question[i].answer[2].is_correct == true){
+                var title=`<span class="title">${_this.question[i].question}</span>`
+            
+                var item=`
+                <tr>
+                    <th scope="row">${Number(i)+1}</th>
+                    <td>${_this.question[i].question}</td>
+                    <td>${_this.question[i].answer[0].answer}</td>
+                    <td>${_this.question[i].answer[1].answer}</td>
+                    <td class="badge bg-primary">${_this.question[i].answer[2].answer}</td>
+                    <td>${_this.question[i].answer[3].answer}</td>
+                    
 
+                    
+
+                </tr>`
+            }
+            else{
+                var title=`<span class="title">${_this.question[i].question}</span>`
+            
+                var item=`
+                <tr>
+                    <th scope="row">${Number(i)+1}</th>
+                    <td >${_this.question[i].question}</td>
+                    <td>${_this.question[i].answer[0].answer}</td>
+                    <td>${_this.question[i].answer[1].answer}</td>
+                    <td>${_this.question[i].answer[2].answer}</td>
+                    <td class="badge bg-primary">${_this.question[i].answer[3].answer}</td>
+                    
+
+                    
+
+                </tr>`
+            }
+           
             wrapper.innerHTML += item
 
 
 
 
-
-            if(_this.question[i].answer[0].is_correct == true ){
-                console.log(_this.question[i].answer[0].is_correct)
-            }
 
             
                                 

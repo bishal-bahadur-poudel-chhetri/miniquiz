@@ -7,7 +7,7 @@ from miniquiz.form  import *
 
 # Create your views here.
 def admin(request):
-    print(Account.objects.all().values())
+
     context={
         'totalCategory':Category.objects.filter(category__isnull=False).count(),
         'totalReport':Category.objects.filter(report__gte=20).count(),
@@ -16,7 +16,7 @@ def admin(request):
         'checkbox':Category.objects.filter(is_verified=False),
         'reportedCategory':Category.objects.filter(report__gte=20,is_verified=True),
     }
-    print(Category.objects.filter(is_verified=False))
+
 
 
     return render(request,'admins/admin.html',context)
@@ -45,60 +45,19 @@ def question(request):
     if request.user.is_admin:
         user=request.user
         if request.method=='POST':
-            form = ImageForm(request.POST)
+            form = ImageForm(request.POST,request.FILES)
             print(request.POST)
             author_id=Account.objects.filter(username=user).values('id')
             categoryImage="/categoryImage/"+request.POST['categoryImage']
             print(categoryImage)
             print(author_id)
             if form.is_valid():
+                handle_uploaded_file(request.FILES['file'])
                 dweet = form.save(commit=False)
                 dweet.authors_id = author_id
                 dweet.categoryImage=categoryImage
                 dweet.save()
-            
-
-
-    # if request.POST:
-
-    #     categoruUID=request.POST['id']
-    #     questions=request.POST['question']
-    #     opt1=request.POST['choice1']
-    #     opt2=request.POST['choice2']
-    #     opt3=request.POST['choice3']
-    #     opt4=request.POST['choice4']
         
-    #     quest=Questions(question=questions,category_id=categoruUID)
-    #     quest.save()
-    #     questionid=Questions.objects.filter(question=questions).values('questionid')
-
-    #     print(request.POST)
-    #     if 'answer1' in request.POST:
-    #         Answer1=Answer(answer=opt1,question_id=questionid,is_correct=True)
-    #         Answer2=Answer(answer=opt2,question_id=questionid)
-    #         Answer3=Answer(answer=opt3,question_id=questionid)
-    #         Answer4=Answer(answer=opt4,question_id=questionid)
-    #     elif 'answer2' in request.POST:
-    #         Answer1=Answer(answer=opt1,question_id=questionid)
-    #         Answer2=Answer(answer=opt2,question_id=questionid,is_correct=True)
-    #         Answer3=Answer(answer=opt3,question_id=questionid)
-    #         Answer4=Answer(answer=opt4,question_id=questionid)
-    #     elif 'answer3' in request.POST:
-    #         Answer1=Answer(answer=opt1,question_id=questionid)
-    #         Answer2=Answer(answer=opt2,question_id=questionid)
-    #         Answer3=Answer(answer=opt3,question_id=questionid,is_correct=True)
-    #         Answer4=Answer(answer=opt4,question_id=questionid)
-    #     else:
-    #         Answer1=Answer(answer=opt1,question_id=questionid)
-    #         Answer2=Answer(answer=opt2,question_id=questionid)
-    #         Answer3=Answer(answer=opt3,question_id=questionid)
-    #         Answer4=Answer(answer=opt4,question_id=questionid,is_correct=True)
-                
-                
-    #     Answer1.save()
-    #     Answer2.save()
-    #     Answer3.save()
-    #     Answer4.save()
     context={
         'categories':Category.objects.filter(authors=request.user),
         'questionDetail':Questions.objects.select_related('question','category').values('category__categoryName','question','question_answer'),

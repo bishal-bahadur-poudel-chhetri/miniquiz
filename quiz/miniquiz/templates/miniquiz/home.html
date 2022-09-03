@@ -22,7 +22,7 @@
     
     <div class="modal_container">
         <i class="cross fa fa-times" onclick="closeForm()" aria-hidden="true" style="color:red;font-size: 20px;"></i>
-        <form action="" method="POST" id="myForms">
+        <form action="" method="POST" id="myForms" enctype="multipart/form-data">
             {% csrf_token %}
             
             <h1>Create Categories</h1>
@@ -36,7 +36,6 @@
             </div>
           </form>
     </div>
-  
     
 </div>
 {% endif%}
@@ -84,7 +83,7 @@
 
     <div class="box-container">
 
-      
+
         {% for playQuiz in quizCategory%}
 
             <div class="box">
@@ -93,6 +92,7 @@
                     <div class="icons">
                         <a href="#"> <i class="fas fa-user"></i>{{playQuiz}}</a>
                         <a href="#"> <i class="fas fa-calendar"></i> {{playQuiz.update_at}} </a>
+                   
                     </div>
                     <h3>{{playQuiz}}</h3>
                     <p>{{playQuiz.description}}</p>
@@ -118,7 +118,7 @@
 
 <!-- review section starts  -->
 
-<section class="review" id="review">
+<!-- <section class="review" id="review">
 
     <h1 class="heading"> customer's <span>review</span> </h1>
 
@@ -178,7 +178,7 @@
                 </div>
             </div>
 
-        </div>
+        </div> -->
 
     </div>
 

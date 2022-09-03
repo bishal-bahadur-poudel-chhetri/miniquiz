@@ -20,11 +20,16 @@
         </div>
         <div class="formBox">
 		 <form class="form-signin" method="post">{% csrf_token %}
+   
+
             <h2>Sign In</h2>
             <input type="email" name="email" class="inp" placeholder="Email" required autofocus>
-			<input type="password" name="password" class="inp" placeholder="Password" required>
+			      <input type="password" name="password" class="inp" placeholder="Password" required>
+            {% if loginerror == 1 %}
+              <p style="color:red;font-size:10px;";>Email or Password not matched</p>
+            {% endif %}
             <input type="submit" value="login" name="type" class="button">
-			
+          
 
 	
 		
@@ -46,6 +51,7 @@
 			{% for field in registration_form %}
 				<h1>hi</h1>
 			{% endfor %}
+   
 
 		
 

@@ -9,12 +9,16 @@
           <h1>two step verification</h1>
           <img src="https://images.unsplash.com/photo-1548021029-d6cf339a5ce4?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80" alt="">
           <p>4 digit OTP is send to email {{email}}</p>
+          {% if error %}
+            <center style="color:red">{{error}}</center>
+          {% endif %}
           <div class="code">
               <input type = "number" maxlength = "1" name="one" id="otp1" onkeyup="mover(event,'','otp1','otp2')">
               <input type = "number" maxlength = "1" name="two" id="otp2"  name="one"onkeyup="mover(event,'otp1','otp2','otp3')">
               <input type = "number" maxlength = "1" name="three" id="otp3" onkeyup="mover(event,'otp2','otp3','otp4')">
               <input type = "number" maxlength = "1" name="four" id="otp4" onkeyup="mover(event,'otp3','otp4','')">
           </div>
+
           <button type="submit">Submit</button>
           <button class="cancel">Cancel</button>
       </form>

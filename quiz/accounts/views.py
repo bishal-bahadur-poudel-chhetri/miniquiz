@@ -6,22 +6,35 @@ from accounts.forms import RegistrationForm,Accountauthentication
 from api.views import *
 
 def loginSigninController(request):
-	context={}
+	type=2
 	if request.POST:
 		if request.POST['type'] == 'login':
 			Login_user=logins(request)
 			if Login_user is not None:
 				login(request,Login_user)
 				checkif_admin=Account.objects.filter(username=Login_user).values('is_admin').first()
-				print(checkif_admin["is_admin"])
+				type=2
 				if checkif_admin["is_admin"] ==False:
 					return redirect('/getquestion/')
 				else:
-					return redirect('/getquestion/admin')
+					return redirect('/admins')
+
+			else:
+				type=1
 		elif request.POST['type'] == 'Signup':
 			conform=register_view(request)
 			if conform == 200:
 				return redirect("otp")
+	
+
+
+
+	context={
+		'loginerror':type
+	}
+
+
+		
 
 
 				
@@ -59,8 +72,9 @@ def register_view(request,*args,**kwargs):
 							i.username=username
 							i.password=raw_password
 							i.save()
-					old = old.first()
+
 					a=RegisterAPI(request)
+					print(a)
 					otp=a.data['data'][0]
 					return a.data['status']
 
@@ -96,27 +110,36 @@ def otpverification(request):
 		emailUser=tempProfile.objects.filter(email=email).values('email').first()
 		Userotp=tempProfile.objects.filter(otp=userotp).values()
 		
-		print(request.POST)
-		if userotp==Userotp[0]['otp']:
-			old = tempProfile.objects.filter(email__iexact = email)
-			new_update=Account.objects.all()
+		try:
+			
+			if userotp==Userotp[0]['otp']:
+				old = tempProfile.objects.filter(email__iexact = email)
+				new_update=Account.objects.all()
 
-			temp_data=old.first()
-			temp_data.validated=True
-			temp_data.save()
-			email=temp_data.email
-			password=temp_data.password
-			print(password)
-			a=Account(email=email,username=temp_data.username)
-			a.set_password(password)
-			a.save()
+				temp_data=old.first()
+				temp_data.validated=True
+				temp_data.save()
+				email=temp_data.email
+				password=temp_data.password
+				print(password)
+				a=Account(email=email,username=temp_data.username)
+				a.set_password(password)
+				a.save()
 
-			user=authenticate(email=email,password=password)
-			login(request,user)
-			response=redirect('/getquestion/')
-			return response
-		else:
-			print("error")
+				user=authenticate(email=email,password=password)
+				login(request,user)
+				response=redirect('/getquestion/')
+				return response
+		
+		except:
+			error="Invalid OTP"
+			context={
+				'email':email,
+				"error":error
+			}
+			return render(request,'account/otpinput.html',context)
+
+
 
 
 	# print(request.POST['otp'])
@@ -147,6 +170,7 @@ def logins(request):
 			user=authenticate(request,email=email,password=password)
 			
 			return user
+
 		# else:
 		# 	return False
 

@@ -18,6 +18,12 @@ urlpatterns = [
     path('get',views.miniquiz,name="context"),
 
     path('categorydelete',views.categorydelete),
+    path('submitscore',views.submitscore),
+    path('thanks',views.thanks),
+
+
+
+
     path('categoryadd',views.categoryadd,name="context"),
 
     path('categories',views.categories,name="context"),

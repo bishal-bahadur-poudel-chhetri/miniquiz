@@ -6,24 +6,24 @@ from django.contrib.auth.models import User
 from .form import ImageForm
 import json
 from django.db.models import Sum
+from django.db.models import Q
+
 
 
 def home(request):
-    form=ImageForm()
+    
     if request.user.is_authenticated:
+        form=ImageForm(request.POST, request.FILES)
         user=request.user
         if request.method=='POST':
-            form = ImageForm(request.POST)
-            print(request.POST)
             author_id=Account.objects.filter(username=user).values('id')
-            categoryImage="/categoryImage/"+request.POST['categoryImage']
-            print(categoryImage)
-            print(author_id)
+
             if form.is_valid():
+               
                 dweet = form.save(commit=False)
                 dweet.authors_id = author_id
-                dweet.categoryImage=categoryImage
                 dweet.save()
+              
                 redirect("/getquestion")
         
         context={
@@ -32,22 +32,24 @@ def home(request):
         'categoryImage':Category.objects.all(),
         
         'form':form,
-        'quizCategory':Category.objects.exclude(authors=user)[0:4],
+        'quizCategory':Category.objects.filter(~Q(authors=user),is_verified=True)[0:4],
+        # 'quizCategory':Category.objects.exclude(is_verified=False,authors=user)[0:4],
         'CategoryOwner':Account.objects.get(username=user),
         'form':form
         
         }
     else:
-        print("hello")
+
         context={
-            'quizCategory':Category.objects.all()[0:4],
+            'quizCategory':Category.objects.filter(is_verified=True)[0:4],
         }
     
 
 
-    
+        print(categories)
 
     return render(request,'miniquiz/home.html',context)
+
 
 def quiz(request,uuid_check):
     categoryImg=Category.objects.filter(uid=uuid_check).values('categoryImage').first()
@@ -112,31 +114,6 @@ def home_view(request,hi,uuid_check):
 def add(request,uuid_check):
 
     if request.method == 'POST':
-        post_data=json.loads(request.body.decode("UTF-8"))
-
-
-        name=post_data['title']
-        option1=post_data['opt1']
-        option2=post_data['opt2']
-        option3=post_data['opt3']
-        option4=post_data['opt4']
-        quest=Questions(question=name,category_id=uuid_check)
-        quest.save()
-        questionid=Questions.objects.filter(question=name).values('questionid')
-        Answer1=Answer(answer=option1,question_id=questionid)
-        Answer2=Answer(answer=option2,question_id=questionid)
-        Answer3=Answer(answer=option3,question_id=questionid)
-        Answer4=Answer(answer=option4,question_id=questionid)
-        Answer1.save()
-        Answer2.save()
-        Answer3.save()
-        Answer4.save()
-
-
-    return render(request,'miniquiz/quiz.html')
-
-
-def update(request,uuid_check,questionsid):
         if request.method == 'POST':
             post_data=json.loads(request.body.decode("UTF-8"))
 
@@ -146,11 +123,84 @@ def update(request,uuid_check,questionsid):
             option2=post_data['opt2']
             option3=post_data['opt3']
             option4=post_data['opt4']
+            crt=post_data['wrightans']
+            
+
+            if crt=="A":
+                quest=Questions(question=name,category_id=uuid_check)
+                quest.save()
+                questionid=Questions.objects.filter(question=name).values('questionid')
+                Answer1=Answer(answer=option1,question_id=questionid,is_correct=True)
+                Answer2=Answer(answer=option2,question_id=questionid)
+                Answer3=Answer(answer=option3,question_id=questionid)
+                Answer4=Answer(answer=option4,question_id=questionid)
+                Answer1.save()
+                Answer2.save()
+                Answer3.save()
+                Answer4.save()
+            elif crt=="B":
+                quest=Questions(question=name,category_id=uuid_check)
+                quest.save()
+                questionid=Questions.objects.filter(question=name).values('questionid')
+                Answer1=Answer(answer=option1,question_id=questionid)
+                Answer2=Answer(answer=option2,question_id=questionid,is_correct=True)
+                Answer3=Answer(answer=option3,question_id=questionid)
+                Answer4=Answer(answer=option4,question_id=questionid)
+                Answer1.save()
+                Answer2.save()
+                Answer3.save()
+                Answer4.save()
+
+            elif crt=="C":
+                quest=Questions(question=name,category_id=uuid_check)
+                quest.save()
+                questionid=Questions.objects.filter(question=name).values('questionid')
+                Answer1=Answer(answer=option1,question_id=questionid)
+                Answer2=Answer(answer=option2,question_id=questionid)
+                Answer3=Answer(answer=option3,question_id=questionid,is_correct=True)
+                Answer4=Answer(answer=option4,question_id=questionid)
+                Answer1.save()
+                Answer2.save()
+                Answer3.save()
+                Answer4.save()
+            elif crt=="D":
+                quest=Questions(question=name,category_id=uuid_check)
+                quest.save()
+                questionid=Questions.objects.filter(question=name).values('questionid')
+                Answer1=Answer(answer=option1,question_id=questionid)
+                Answer2=Answer(answer=option2,question_id=questionid)
+                Answer3=Answer(answer=option3,question_id=questionid)
+                Answer4=Answer(answer=option4,question_id=questionid,is_correct=True)
+                Answer1.save()
+                Answer2.save()
+                Answer3.save()
+                Answer4.save()
+
+
+
+    return render(request,'miniquiz/quiz.html')
+
+
+def update(request,uuid_check,questionsid):
+    if request.method == 'POST':
+        post_data=json.loads(request.body.decode("UTF-8"))
+
+
+        name=post_data['title']
+        option1=post_data['opt1']
+        option2=post_data['opt2']
+        option3=post_data['opt3']
+        option4=post_data['opt4']
+        crt=post_data['wrightans']
+        print(crt)
+
+        if crt=="A":
+
             questio=Questions(question=name,category_id=uuid_check,questionid=questionsid)
             questio.save()
             quest=Questions.objects.get(questionid=questionsid,question=name)
             questionids=Answer.objects.filter(question=quest).values('answer_id')
-            Answer1=Answer(answer=option1,answer_id=questionids[0]['answer_id'],question_id=questionsid)
+            Answer1=Answer(answer=option1,answer_id=questionids[0]['answer_id'],question_id=questionsid,is_correct=True)
             Answer2=Answer(answer=option2,answer_id=questionids[1]['answer_id'],question_id=questionsid)
             Answer3=Answer(answer=option3,answer_id=questionids[2]['answer_id'],question_id=questionsid)
             Answer4=Answer(answer=option4,answer_id=questionids[3]['answer_id'],question_id=questionsid)
@@ -158,6 +208,49 @@ def update(request,uuid_check,questionsid):
             Answer2.save()
             Answer3.save()
             Answer4.save()
+        elif crt=="B":
+
+            questio=Questions(question=name,category_id=uuid_check,questionid=questionsid)
+            questio.save()
+            quest=Questions.objects.get(questionid=questionsid,question=name)
+            questionids=Answer.objects.filter(question=quest).values('answer_id')
+            Answer1=Answer(answer=option1,answer_id=questionids[0]['answer_id'],question_id=questionsid)
+            Answer2=Answer(answer=option2,answer_id=questionids[1]['answer_id'],question_id=questionsid,is_correct=True)
+            Answer3=Answer(answer=option3,answer_id=questionids[2]['answer_id'],question_id=questionsid)
+            Answer4=Answer(answer=option4,answer_id=questionids[3]['answer_id'],question_id=questionsid)
+            Answer1.save()
+            Answer2.save()
+            Answer3.save()
+            Answer4.save()
+        elif crt=="C":
+
+            questio=Questions(question=name,category_id=uuid_check,questionid=questionsid)
+            questio.save()
+            quest=Questions.objects.get(questionid=questionsid,question=name)
+            questionids=Answer.objects.filter(question=quest).values('answer_id')
+            Answer1=Answer(answer=option1,answer_id=questionids[0]['answer_id'],question_id=questionsid)
+            Answer2=Answer(answer=option2,answer_id=questionids[1]['answer_id'],question_id=questionsid)
+            Answer3=Answer(answer=option3,answer_id=questionids[2]['answer_id'],question_id=questionsid,is_correct=True)
+            Answer4=Answer(answer=option4,answer_id=questionids[3]['answer_id'],question_id=questionsid)
+            Answer1.save()
+            Answer2.save()
+            Answer3.save()
+            Answer4.save()
+        elif crt=="D":
+
+            questio=Questions(question=name,category_id=uuid_check,questionid=questionsid)
+            questio.save()
+            quest=Questions.objects.get(questionid=questionsid,question=name)
+            questionids=Answer.objects.filter(question=quest).values('answer_id')
+            Answer1=Answer(answer=option1,answer_id=questionids[0]['answer_id'],question_id=questionsid)
+            Answer2=Answer(answer=option2,answer_id=questionids[1]['answer_id'],question_id=questionsid)
+            Answer3=Answer(answer=option3,answer_id=questionids[2]['answer_id'],question_id=questionsid)
+            Answer4=Answer(answer=option4,answer_id=questionids[3]['answer_id'],question_id=questionsid,is_correct=True)
+            Answer1.save()
+            Answer2.save()
+            Answer3.save()
+            Answer4.save()
+
         return render(request,'miniquiz/quiz.html')
 
 def detail(request):
@@ -232,6 +325,7 @@ def detail(request):
         'following':user_following,
         'follow_button_value':follow_button_value,
         'next_btn':uid_check_url,
+        'userCategories':Category.objects.filter(authors=authorid['authors'])
         
         
         
@@ -241,13 +335,37 @@ def detail(request):
     return render(request,'miniquiz/userDetail.html',context)
 
 def miniquiz(request):
+    
     uuid_check=request.GET.get('quizid')
-    a=Category.objects.all().values()
-    context={
-        'id': uuid_check,
-    }
+    user=request.user
+    a=Account.objects.filter(username=username).values('id').first()
+    scoreboardcheck=leaderboards.objects.filter(categoryIdentity_id=uuid_check,authorsID_id=user).values().first()
+ 
 
-    return render(request,'miniquiz/miniquiz.html',context)
+    if scoreboardcheck==None:
+
+        print("hi1")
+
+       
+        # a=Category.objects.all().values()
+        
+        context={
+            'id': uuid_check,
+            'user':user,
+            
+        }
+        print(uuid_check)
+        a=Account.objects.filter(username=username).values('id').first()
+        print(a)
+
+        # leaderdetail=leaderboards(categoryIdentity_id=uuid_check,authorsID_id=a['id'])
+
+        # print(leaderdetail)
+
+        return render(request,'miniquiz/miniquiz.html',context)
+    else:
+         return render(request,'miniquiz/thanks.html')
+
 
 
 
@@ -282,22 +400,59 @@ def categoryadd(request):
 
 
 def leaderboard(request):
-    dashboard=leaderboards.objects.select_related('authorsID').values('authorsID__username','authorsID__email','authorsID__profile_image','score').annotate(total_price=Sum('score'))[0:3]
-    userlist=leaderboards.objects.select_related('authorsID').values('authorsID__username','authorsID__email','authorsID__profile_image','score').annotate(total_price=Sum('score'))[0:10]
-
   
+    userlist=leaderboards.objects.select_related('authorsID').values('authorsID__username','authorsID__email','authorsID__profile_image').annotate(Sum('score'))[0:3]
+    userlists=leaderboards.objects.select_related('authorsID').values('authorsID__username','authorsID__email','authorsID__profile_image').annotate(Sum('score'))[0:10]
+    
     context={
-        'leaderboard':dashboard,
-        'userlist':userlist,
+        'leaderboard':userlist,
+        'userlist':userlists,
+        
     }
-    print(context)
+    print(leaderboards.objects.select_related('authorsID').values('authorsID__username','authorsID__profile_image','authorsID__email').annotate(Sum('score')))
     return render(request,'miniquiz/leaderboard.html',context)
 
 def categories(request):
+    user=request.user
+    id=Account.objects.filter(username=user).values('id').first()
+ 
     context={
-        'categories':Category.objects.order_by('update_at'),
+        # Category.objects.filter(is_verified=True).order_by('update_at'),
+        'categories':Category.objects.filter(~Q(authors=id['id']),is_verified=True)
+        
+        
+        # 'categories':Category.objects.filter(is_verified=True),
+
     }
     return render(request,'miniquiz/categories.html',context)
+def  submitscore(request):
+   
+    if request.method == 'POST':
+        print("a")
+        post_data=json.loads(request.body.decode("UTF-8"))
+        a=leaderboards.objects.all().values()
+       
+
+
+        score=post_data['score']
+        username=post_data['user']
+        quizid=post_data['quizid']
+        print(score)
+        
+        # questio.save()
+        # print(score,username,quizid)
+        a=Account.objects.filter(username=username).values('id').first()
+
+        leaderdetail=leaderboards(categoryIdentity_id=quizid,authorsID_id=a['id'],score=score)
+        leaderdetail.save()
+        
+    return render(request,'miniquiz/test.html')
+
+def thanks(request):
+    return render(request,'miniquiz/thanks.html')
+
+
+
 
     
 

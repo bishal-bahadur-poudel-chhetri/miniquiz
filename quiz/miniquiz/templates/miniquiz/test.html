@@ -148,16 +148,42 @@
 					<br>	
 					<div class="flex-wrapper">
 						<div class="box">
-							<input id="opt-0" class="form-control" type="text" name="option1" placeholder="Answer 1" required>
+							<input class="daychecks" onclick="checkOnlyOne(this.value);" type="checkbox" name="reoccur_weekday" value="A" />
+							
 						</div>
 						<div class="box">
+							<input id="opt-0" class="form-control" type="text" name="option1" placeholder="Answer 1" required>
+
+						</div>
+						<div class="box">
+							<input class="daychecks" onclick="checkOnlyOne(this.value);" type="checkbox" name="reoccur_weekday" value="B" />
+							
+						</div>
+						
+						
+						<div class="box">
 							<input id="opt-1" class="form-control" type="text" name="option2" placeholder="Answer 2" required>
+                           
+                            
+
+						</div>
+						<div class="box">
+							<input class="daychecks" onclick="checkOnlyOne(this.value);" type="checkbox" name="reoccur_weekday" value="c" />
+							
 						</div>
 						<div class="box">
 							<input id="opt-2" class="form-control" type="text" name="option3" placeholder="Answer 3" required>
+						
+
+
 						</div>
 						<div class="box">
-							<input id="opt-3" class="form-control" type="text" name="option4" placeholder="Answer 4" required>
+							<input class="daychecks" onclick="checkOnlyOne(this.value);" type="checkbox" name="reoccur_weekday" value="d"  />
+						</div>
+						<div class="box">
+							<input id="opt-3" class="form-control" type="text" name="option4" placeholder="Answer 4" >
+                      
+
 						</div>
 					</div>
 					<!-- <div class="error">
@@ -183,6 +209,19 @@
 	</div>
     
     <script>
+	
+		function checkOnlyOne(b){
+		window.rightanswer=b
+		var x = document.getElementsByClassName('daychecks');
+		var i;
+		
+
+		for (i = 0; i < x.length; i++) {
+		if(x[i].value != b) x[i].checked = false;
+		}
+	
+		}
+		
         var _this=this
         var a='{{id}}'
 		// var categoryName='{{categoryName}}'
@@ -325,6 +364,10 @@
 			var opt2=document.getElementById('opt-1').value
 			var opt3=document.getElementById('opt-2').value
 			var opt4=document.getElementById('opt-3').value
+			var ringtanswer=rightanswer
+			console.log(rightanswer)
+			
+			
 
 
 			var title=document.getElementById('title').value
@@ -341,7 +384,8 @@
 			'opt2':opt2,
 			'opt3':opt3,
 			'opt4':opt4,
-			})
+			'wrightans':ringtanswer,			
+		})
 				
 			})
 			.then(function(response){
